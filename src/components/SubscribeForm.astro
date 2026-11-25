@@ -1,0 +1,113 @@
+---
+import { site, subscribe } from "../data/site";
+
+interface Props {
+  id?: string;
+  compact?: boolean;
+}
+const { id = "subscribe-email", compact = false } = Astro.props;
+// Set PUBLIC_FORM_ENDPOINT to your newsletter provider's or form service's address.
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
+---
+
+<form class:list={["subscribe", { compact }]} data-subscribe data-endpoint={endpoint} data-email={site.email} novalidate>
+  <label for={id}>{subscribe.title}</label>
+  <div class="row">
+    <input id={id} name="email" type="email" autocomplete="email" placeholder={subscribe.placeholder} required />
+    <button class="btn btn-primary" type="submit">{subscribe.button}</button>
+  </div>
+  <p class="status" role="status" aria-live="polite" data-default={subscribe.text}>{subscribe.text}</p>
+</form>
+
+<script>
+  import { subscribe as copy } from "../data/site";
+
+  document.querySelectorAll<HTMLFormElement>("[data-subscribe]").forEach((form) => {
+    const input = form.querySelector("input") as HTMLInputElement;
+    const status = form.querySelector(".status") as HTMLElement;
+    const button = form.querySelector("button") as HTMLButtonElement;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const email = input.value.trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        input.setAttribute("aria-invalid", "true");
+        status.textContent = "That email doesn't look right. Check it and try again.";
+        input.focus();
+        return;
+      }
+      input.removeAttribute("aria-invalid");
+      const endpoint = form.dataset.endpoint;
+
+      if (!endpoint) {
+        const subject = encodeURIComponent("Subscribe me to The Slow Commute");
+        const body = encodeURIComponent(`Please add ${email} to the list.`);
+        status.innerHTML = `Online sign-up isn't set up yet. <a class="text-link" href="mailto:${form.dataset.email}?subject=${subject}&body=${body}">Email to subscribe</a> and you'll be added by hand.`;
+        return;
+      }
+
+      button.disabled = true;
+      status.textContent = "Adding you";
+      try {
+        const res = await fetch(endpoint, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        status.textContent = copy.done;
+      } catch {
+        status.innerHTML = `That didn't go through. Email <a class="text-link" href="mailto:${form.dataset.email}">${form.dataset.email}</a> and you'll be added by hand.`;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  });
+</script>
+
+<style>
+  .subscribe {
+    display: grid;
+    gap: 10px;
+    max-width: 480px;
+  }
+  label {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .row {
+    display: flex;
+    gap: 8px;
+  }
+  input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 44px;
+    padding: 0 14px;
+    font: inherit;
+    font-size: 16px;
+    color: var(--text);
+    background: var(--card);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    transition: border-color 150ms var(--ease);
+  }
+  input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(28, 106, 70, 0.16);
+  }
+  input[aria-invalid="true"] {
+    border-color: #b3261e;
+  }
+  .status {
+    font-size: 14px;
+    color: var(--muted);
+    min-height: 21px;
+  }
+  @media (max-width: 420px) {
+    .row {
+      flex-direction: column;
+    }
+    input {
+      flex: none;
+    }
+  }
+</style>

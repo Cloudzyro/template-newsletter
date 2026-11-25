@@ -1,0 +1,24 @@
+---
+import { site } from "../data/site";
+---
+
+<a class="logo" href="/" aria-label={`${site.name}, home`}>
+  <svg width="28" height="16" viewBox="0 0 28 16" aria-hidden="true">
+    <line x1="0" y1="8" x2="28" y2="8" stroke="var(--accent)" stroke-width="4"></line>
+    <circle cx="14" cy="8" r="5.5" fill="var(--card)" stroke="var(--text)" stroke-width="3"></circle>
+  </svg>
+  <span>{site.name}</span>
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+</style>

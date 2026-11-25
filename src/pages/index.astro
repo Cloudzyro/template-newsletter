@@ -1,0 +1,181 @@
+---
+import Base from "../layouts/Base.astro";
+import SubscribeForm from "../components/SubscribeForm.astro";
+import RouteList from "../components/RouteList.astro";
+import { home, site, writer } from "../data/site";
+import { getIssues, formatDate, readingMinutes } from "../lib/issues";
+
+const issues = await getIssues();
+const latest = issues[0];
+const recent = issues.slice(1, 5);
+---
+
+<Base>
+  <section class="masthead">
+    <div class="wrap grid">
+      <div class="intro">
+        <p class="byline">{home.byline}</p>
+        <h1>{home.headline}</h1>
+        <p class="lede">{home.intro}</p>
+        <div id="subscribe">
+          <SubscribeForm id="home-email" />
+        </div>
+        <p class="meta">{site.cadence}. {site.readTime}.</p>
+      </div>
+
+      {
+        latest && (
+          <article class="latest" aria-labelledby="latest-title">
+            <p class="latest-label">
+              <span class="stop is-latest" aria-hidden="true" />
+              Latest issue, No. {latest.data.number}
+            </p>
+            <h2 id="latest-title">
+              <a href={`/issues/${latest.id}/`}>{latest.data.title}</a>
+            </h2>
+            <p class="dek">{latest.data.dek}</p>
+            <p class="meta">
+              {formatDate(latest.data.date)}, {readingMinutes(latest)} min read
+            </p>
+            <a class="btn btn-secondary" href={`/issues/${latest.id}/`}>Read the issue</a>
+          </article>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Earlier issues</h2>
+        <a class="text-link" href="/issues/">All {issues.length} issues</a>
+      </div>
+      <RouteList issues={recent} latestNumber={latest?.data.number ?? 0} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap about">
+      <div>
+        <h2>About the writer</h2>
+      </div>
+      <div class="about-body">
+        <p class="who">{writer.name}, {writer.role.toLowerCase()}</p>
+        <p>{writer.short}</p>
+        <a class="text-link" href="/about/">More about Teodora</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .masthead {
+    padding: 80px 0 96px;
+    border-bottom: 1px solid var(--line);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .intro {
+    display: grid;
+    gap: 24px;
+  }
+  .byline {
+    font-size: 15px;
+    color: var(--text-2);
+  }
+  h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(40px, 5vw, 60px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .lede {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--text-2);
+    max-width: 36rem;
+  }
+  #subscribe {
+    margin-top: 8px;
+    scroll-margin-top: 32px;
+  }
+  .latest {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    padding: 32px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    border-top: 4px solid var(--accent);
+  }
+  .latest-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-2);
+  }
+  .latest h2 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.15;
+  }
+  .latest h2 a {
+    text-decoration: none;
+  }
+  .latest h2 a:hover {
+    color: var(--accent);
+  }
+  .latest .dek {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 64px;
+  }
+  .about h2 {
+    font-size: 32px;
+    line-height: 1.15;
+  }
+  .about-body {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    font-family: var(--font-serif);
+    font-size: 20px;
+    line-height: 1.6;
+    max-width: 40rem;
+  }
+  .who {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .about-body .text-link {
+    font-family: var(--font-sans);
+    font-size: 16px;
+  }
+  @media (max-width: 880px) {
+    .masthead {
+      padding: 48px 0 64px;
+    }
+    .grid,
+    .about {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .latest {
+      padding: 24px;
+    }
+  }
+</style>

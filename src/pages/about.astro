@@ -1,0 +1,130 @@
+---
+import Base from "../layouts/Base.astro";
+import SubscribeForm from "../components/SubscribeForm.astro";
+import { site, writer } from "../data/site";
+---
+
+<Base title="About" description={`${writer.name} writes ${site.name}. ${writer.short}`}>
+  <section class="wrap about">
+    <div class="side">
+      <svg class="sign" viewBox="0 0 160 220" role="img" aria-labelledby="sign-title">
+        <title id="sign-title">A bus stop sign for the 9, Teodora's childhood route</title>
+        <rect x="76" y="70" width="8" height="150" fill="#9aa19d" />
+        <rect x="20" y="6" width="120" height="84" rx="12" fill="#1c6a46" />
+        <circle cx="80" cy="48" r="26" fill="#fafaf7" />
+        <text x="80" y="58" text-anchor="middle" font-family="Schibsted Grotesk Variable, sans-serif" font-size="30" font-weight="500" fill="#15191a">9</text>
+        <rect x="40" y="100" width="80" height="34" rx="6" fill="#fafaf7" stroke="#15191a" stroke-opacity=".15" />
+        <rect x="50" y="110" width="44" height="4" rx="2" fill="#646d6b" />
+        <rect x="50" y="120" width="60" height="4" rx="2" fill="#646d6b" />
+      </svg>
+      <dl>
+        <div><dt>Writes</dt><dd>{site.name}, weekly on Sundays</dd></div>
+        <div><dt>Based in</dt><dd>Eastgate, {site.city}</dd></div>
+        <div><dt>Contact</dt><dd><a class="text-link" href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+      </dl>
+    </div>
+    <div class="body">
+      <p class="role">{writer.role}</p>
+      <h1>{writer.name}</h1>
+      {writer.long.map((p) => <p>{p}</p>)}
+      <h2>Elsewhere</h2>
+      <ul>
+        {writer.elsewhere.map((item) => <li><a class="text-link" href={item.href}>{item.label}</a></li>)}
+      </ul>
+      <div class="sub"><SubscribeForm id="about-email" /></div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .about {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 80px;
+    padding-top: 80px;
+    padding-bottom: 96px;
+  }
+  .side {
+    display: grid;
+    gap: 32px;
+    align-content: start;
+  }
+  .sign {
+    width: 140px;
+    height: auto;
+  }
+  dl {
+    display: grid;
+    gap: 16px;
+    margin: 0;
+  }
+  dt {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  dd {
+    margin: 4px 0 0;
+    overflow-wrap: anywhere;
+    font-size: 15px;
+  }
+  .body {
+    max-width: 680px;
+    font-family: var(--font-serif);
+    font-size: 20px;
+    line-height: 1.7;
+  }
+  .role {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    color: var(--text-2);
+  }
+  h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 52px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 12px 0 32px;
+  }
+  .body p + p {
+    margin-top: 20px;
+  }
+  h2 {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    margin: 48px 0 12px;
+  }
+  ul {
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+    font-family: var(--font-sans);
+    font-size: 16px;
+  }
+  .sub {
+    margin-top: 56px;
+    font-family: var(--font-sans);
+    font-size: 16px;
+  }
+  @media (max-width: 880px) {
+    .about {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      padding-top: 48px;
+    }
+    .side {
+      grid-template-columns: 100px 1fr;
+      align-items: start;
+    }
+    .sign {
+      width: 100px;
+    }
+    h1 {
+      font-size: 40px;
+    }
+    .body {
+      font-size: 18px;
+    }
+  }
+</style>

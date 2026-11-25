@@ -1,0 +1,89 @@
+---
+import Base from "../../layouts/Base.astro";
+import RouteList from "../../components/RouteList.astro";
+import SubscribeForm from "../../components/SubscribeForm.astro";
+import { getIssues, formatMonth } from "../../lib/issues";
+
+const issues = await getIssues();
+const latestNumber = issues[0]?.data.number ?? 0;
+
+// Group by month, newest first.
+const groups = new Map<string, typeof issues>();
+for (const issue of issues) {
+  const key = formatMonth(issue.data.date);
+  groups.set(key, [...(groups.get(key) ?? []), issue]);
+}
+---
+
+<Base title="All issues" description={`Every issue of The Slow Commute, ${issues.length} so far, newest first.`}>
+  <section class="section">
+    <div class="wrap layout">
+      <div class="head">
+        <h1>All issues</h1>
+        <p class="lede">{issues.length} issues so far, newest first. Each one takes a single piece of the street and follows the decisions behind it.</p>
+        <SubscribeForm id="archive-email" />
+      </div>
+      <div>
+        {
+          [...groups].map(([month, list]) => (
+            <section class="month" aria-label={month}>
+              <h2>{month}</h2>
+              <RouteList issues={list} latestNumber={latestNumber} />
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .head {
+    display: grid;
+    gap: 20px;
+    position: sticky;
+    top: 32px;
+  }
+  h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .month + .month {
+    margin-top: 40px;
+  }
+  .month h2 {
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    padding-left: 38px;
+  }
+  @media (max-width: 880px) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .head {
+      position: static;
+    }
+    h1 {
+      font-size: 40px;
+    }
+    .month h2 {
+      padding-left: 30px;
+    }
+  }
+</style>

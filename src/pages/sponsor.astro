@@ -1,0 +1,213 @@
+---
+import Base from "../layouts/Base.astro";
+import { site, sponsor } from "../data/site";
+
+const subject = encodeURIComponent(`Sponsoring ${site.name}`);
+---
+
+<Base title="Sponsor" description={`Sponsor an issue of ${site.name}: one sponsor per issue, written with you.`}>
+  <section class="wrap page">
+    <div class="head">
+      <h1>Sponsor an issue</h1>
+      <p class="lede">{sponsor.intro}</p>
+      <a class="btn btn-primary" href={`mailto:${site.email}?subject=${subject}`}>Ask about dates</a>
+      <p class="meta">{sponsor.bookedUntil}</p>
+    </div>
+
+    <section class="block" aria-labelledby="audience">
+      <div class="block-head">
+        <h2 id="audience">Who reads it</h2>
+        <p class="meta">{sponsor.sampleNote}</p>
+      </div>
+      <dl class="audience">
+        {
+          sponsor.audience.map((a) => (
+            <div>
+              <dt>{a.label}</dt>
+              <dd>{a.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section class="block" aria-labelledby="slots">
+      <div class="block-head">
+        <h2 id="slots">Slots and rates</h2>
+        <p class="meta">Prices in US dollars, sample rates</p>
+      </div>
+      <table class="rates">
+        <thead>
+          <tr><th scope="col">Slot</th><th scope="col">What you get</th><th scope="col">Rate</th></tr>
+        </thead>
+        <tbody>
+          {
+            sponsor.slots.map((s) => (
+              <tr>
+                <th scope="row">{s.name}</th>
+                <td>{s.detail}</td>
+                <td class="price">{s.price}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <section class="block" aria-labelledby="past">
+      <div class="block-head">
+        <h2 id="past">Past sponsors</h2>
+        <p class="meta">Sample names</p>
+      </div>
+      <ul class="past">{sponsor.past.map((name) => <li>{name}</li>)}</ul>
+    </section>
+  </section>
+</Base>
+
+<style>
+  .page {
+    padding-top: 80px;
+    padding-bottom: 96px;
+  }
+  .head {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+    max-width: 680px;
+  }
+  h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 52px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .lede {
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .block {
+    margin-top: 80px;
+  }
+  .block-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .block-head h2 {
+    font-size: 24px;
+  }
+  .audience {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0;
+  }
+  .audience div {
+    padding: 24px 24px 0 0;
+  }
+  .audience div + div {
+    padding-left: 24px;
+    border-left: 1px solid var(--line);
+  }
+  .audience dt {
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--text-2);
+    min-height: 40px;
+  }
+  .audience dd {
+    margin: 8px 0 0;
+    font-family: var(--font-serif);
+    font-size: 40px;
+    line-height: 1;
+  }
+  .rates {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+  }
+  .rates th,
+  .rates td {
+    text-align: left;
+    vertical-align: top;
+    padding: 20px 16px 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .rates thead th {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--muted);
+    padding-top: 16px;
+    padding-bottom: 12px;
+  }
+  .rates tbody th {
+    font-weight: 500;
+    width: 22%;
+  }
+  .rates td {
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .rates .price {
+    color: var(--text);
+    white-space: nowrap;
+    text-align: right;
+    padding-right: 0;
+  }
+  .rates thead th:last-child {
+    text-align: right;
+    padding-right: 0;
+  }
+  .past {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 40px;
+    padding-top: 24px;
+    font-size: 17px;
+    color: var(--text-2);
+  }
+  @media (max-width: 880px) {
+    .page {
+      padding-top: 48px;
+    }
+    h1 {
+      font-size: 40px;
+    }
+    .audience {
+      grid-template-columns: 1fr 1fr;
+    }
+    .audience div:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+    .rates thead {
+      display: none;
+    }
+    .rates tr {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4px 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .rates th,
+    .rates td {
+      padding: 0;
+      border: 0;
+    }
+    .rates tbody th {
+      width: auto;
+    }
+    .rates td:not(.price) {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+</style>
